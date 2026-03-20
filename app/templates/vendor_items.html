@@ -55,7 +55,7 @@
               <div class="text-muted" style="font-size: 1.5rem;">
                 {% if item.unit_price is not none %}
                 $
-                {{ item.unit_price }}
+                {{ '%.2f'|format(item.unit_price) }}
                 {% else %}
                 -
                 {% endif %}
