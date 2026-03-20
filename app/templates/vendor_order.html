@@ -2,84 +2,93 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
   <div class="d-flex align-items-center gap-3">
     <a href="/vendors" class="text-dark">
-      <i class="bi bi-arrow-left-circle-fill fs-2"></i>
+      <i class="bi bi-arrow-left-circle-fill" style="font-size: 3rem;"></i>
     </a>
 
-    <h2 class="mb-0">
+    <h2 class="mb-0" style="font-size: 2.2rem;">
       {{ vendor.name }} Order
     </h2>
   </div>
 
-  <div class="text-muted fs-5">
+  <div class="text-muted" style="font-size: 1.5rem;">
     {{ today }}
   </div>
 </div>
 
 <form method="post" action="/vendors/{{ vendor.id }}/order" id="orderForm">
-  <div class="row">
+  <div class="row g-4">
 
-    <div class="col-md-8">
-      <div class="card p-3 mb-3">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="mb-0">Order Items</h5>
-          <a href="/vendors/{{ vendor.id }}/items" class="btn btn-outline-dark btn-sm">
+    <div class="col-12 col-lg-8">
+      <div class="card p-4 mb-3 shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+          <h5 class="mb-0" style="font-size: 1.8rem;">Order Items</h5>
+          <a href="/vendors/{{ vendor.id }}/items" class="btn btn-outline-dark" style="font-size: 1.5rem; padding: 12px 18px;">
             Manage Items
           </a>
         </div>
 
         {% if items %}
         {% for item in items %}
-        <div class="row align-items-center mb-2 item-row" data-price="{{ item.unit_price or 0 }}" data-name="{{ item.name }}">
-          <div class="col-5">
-            {{ item.name }}
-          </div>
+        <div class="card mb-3 border-0 bg-light-subtle item-row" data-price="{{ item.unit_price or 0 }}" data-name="{{ item.name }}">
+          <div class="card-body p-3">
 
-          <div class="col-3">
-            <input type="number" name="qty_{{ item.id }}" class="form-control item-qty" placeholder="Qty" min="0" step="1">
-          </div>
+            <div class="row align-items-center g-3">
+              <div class="col-12 col-md-4">
+                <div class="fw-bold" style="font-size: 1.5rem;">
+                  {{ item.name }}
+                </div>
+              </div>
 
-          <div class="col-2 text-muted">
-            {% if item.unit_price is not none %}
-            $
-            {{ item.unit_price }}
-            {% else %}
-            -
-            {% endif %}
-          </div>
+              <div class="col-4 col-md-2">
+                <div class="text-muted text-center" style="font-size: 1.2rem;">
+                  {% if item.unit_price is not none %}
+                  $
+                  {{ item.unit_price }}
+                  {% else %}
+                  -
+                  {% endif %}
+                </div>
+              </div>
 
-          <div class="col-2">
-            <span class="line-total">-</span>
+              <div class="col-4 col-md-3">
+                <input type="number" name="qty_{{ item.id }}" class="form-control item-qty text-center" placeholder="Qty" min="0" step="1" style="font-size: 1.5rem; padding: 14px;">
+              </div>
+
+              <div class="col-4 col-md-3 text-end">
+                <span class="line-total fw-bold" style="font-size: 1.4rem;">-</span>
+              </div>
+            </div>
+
           </div>
         </div>
         {% endfor %}
         {% else %}
-        <p class="text-muted mb-0">No items added for this vendor yet.</p>
+        <p class="text-muted mb-0" style="font-size: 1.2rem;">No items added for this vendor yet.</p>
         {% endif %}
-
       </div>
     </div>
 
-    <div class="col-md-4">
-      <div class="card p-3">
-        <h5>Summary</h5>
+    <div class="col-12 col-lg-4">
+      <div class="card p-4 shadow-sm" style="position: sticky; top: 20px;">
+        <h5 style="font-size: 1.8rem;">Summary</h5>
 
         <hr>
 
-        <div id="orderSummaryList" class="mb-3">
+        <div id="orderSummaryList" class="mb-3" style="font-size: 1.4rem;">
           <p class="text-muted mb-0">No items selected.</p>
         </div>
 
         <hr>
 
-        <p>Total Amount</p>
-        <h3 id="grandTotal">$0</h3>
+        <p class="mb-2" style="font-size: 1.2rem;">Total Amount</p>
+        <h3 id="grandTotal" style="font-size: 2rem;">$0</h3>
 
         <hr>
 
-        <button type="submit" class="btn btn-primary w-100">
+        <button type="submit" class="btn btn-success w-100" style="font-size: 1.5rem; padding: 16px;">
           Confirm Order
         </button>
       </div>
@@ -108,10 +117,12 @@
       if (qty > 0) {
         lineTotal = qty * price;
         hasSelectedItems = true;
-        summaryHtml += `<div class="d-flex justify-content-between mb-2">
-          <span>${itemName}</span>
-          <span>x ${qty}</span>
-        </div>`;
+        summaryHtml += `
+          <div class="d-flex justify-content-between align-items-center mb-2" style="font-size: 1.4rem;">
+            <span>${itemName}</span>
+            <span>x ${qty}</span>
+          </div>
+        `;
       }
 
       row.querySelector(".line-total").innerText =

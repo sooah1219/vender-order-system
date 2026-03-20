@@ -2,48 +2,49 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h2 class="mb-0">Vendor List</h2>
-</div>
+<div class="mb-4">
 
-<div class="card p-4 shadow-sm mb-4">
-  <h5 class="mb-3">Add Vendor</h5>
+  <h2 class="mb-4" style="font-size: 3rem;">Vendor List</h2>
 
-  <form method="post" action="/vendors">
-    <div class="row g-3">
-      <div class="col-md-5">
-        <label class="form-label">Vendor Name</label>
-        <input type="text" name="name" class="form-control" required>
-      </div>
+  <div class="card p-4 shadow-sm mb-4">
+    <h5 class="mb-4" style="font-size: 2rem;">Add Vendor</h5>
 
-      <div class="col-md-5">
-        <label class="form-label">Phone</label>
-        <input type="text" name="phone" class="form-control" required>
-      </div>
+    <form method="post" action="/vendors">
+      <div class="row g-4">
 
-      <div class="col-md-12">
-        <label class="form-label d-block">Available Days</label>
-
-        <div class="d-flex flex-wrap gap-2 mb-2" id="day-buttons">
-          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Mon">Mon</button>
-          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Tue">Tue</button>
-          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Wed">Wed</button>
-          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Thu">Thu</button>
-          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Fri">Fri</button>
-          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Sat">Sat</button>
-          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Sun">Sun</button>
+        <div class="col-12">
+          <label class="form-label" style="font-size: 1.8rem;">Vendor Name</label>
+          <input type="text" name="name" class="form-control" style="font-size:1.3rem; padding:14px;" required>
         </div>
 
-        <input type="hidden" name="available_days" id="available_days" required>
-      </div>
+        <div class="col-12">
+          <label class="form-label" style="font-size: 1.8rem;">Phone</label>
+          <input type="text" name="phone" class="form-control" style="font-size:1.3rem; padding:14px;" required>
+        </div>
 
-      <div class="col-md-2 d-flex align-items-end">
-        <button type="submit" class="btn btn-dark w-100">
-          Add Vendor
-        </button>
+        <div class="col-12">
+          <label class="form-label d-block" style="font-size: 1.8rem;">Available Days</label>
+
+          <div class="d-flex flex-wrap gap-2 mb-2" id="day-buttons">
+            {% for d in ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] %}
+            <button type="button" class="btn btn-outline-secondary day-btn" style="font-size:1.5rem; padding:10px 20px; width:100px;" data-day="{{ d }}">
+              {{ d }}
+            </button>
+            {% endfor %}
+          </div>
+
+          <input type="hidden" name="available_days" id="available_days" required>
+        </div>
+
+        <div class="col-12">
+          <button type="submit" class="btn btn-dark w-100" style="font-size:1.8rem; padding:16px;">
+            Add Vendor
+          </button>
+        </div>
+
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>
 
 <script>
@@ -71,44 +72,49 @@
 {% if vendors %}
 <div class="row">
   {% for vendor in vendors %}
-  <div class="col-12 mb-3">
-    <div class="card p-4 h-100 shadow-sm d-flex flex-column" style="min-height: 220px;">
+  <div class="col-12 mb-4">
+    <div class="card p-4 shadow-sm d-flex flex-column" style="min-height: 260px; border-radius: 16px;">
+      <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-      <div class="d-flex justify-content-between align-items-start mb-2">
-        <div>
-          <div class="fw-bold fs-4">
+          <div class="fw-bold" style="font-size: 2.5rem;">
             {{ vendor.name }}
           </div>
-          <div class="text-muted">
-            {{ vendor.phone }}
+
+          <div class="d-flex gap-2 flex-wrap">
+            {% if vendor.available_days %}
+            {% for day in vendor.available_days.split(",") %}
+            <span class="badge rounded-pill px-3 py-3 {% if day == today %}bg-danger text-white{% else %}bg-light text-dark border{% endif %}" style="font-size: 1.4rem; width:120px;">
+              {{ day }}
+            </span>
+            {% endfor %}
+            {% endif %}
           </div>
+
         </div>
 
-        <div class="d-flex gap-2 flex-wrap justify-content-end">
-          {% if vendor.available_days %}
-          {% for day in vendor.available_days.split(",") %}
-          <span class="badge rounded-pill px-3 py-2 fs-6 {% if day == today %}bg-danger text-white{% else %}bg-light text-dark border{% endif %}">
-            {{ day }}
-          </span>
-          {% endfor %}
-          {% endif %}
+        <div class="text-muted mt-2" style="font-size: 1.5rem;">
+          {{ vendor.phone }}
         </div>
+
       </div>
 
-      <div class="d-flex gap-3 mt-auto align-items-center">
-        <a href="/vendors/{{ vendor.id }}/order" class="btn btn-success py-2 flex-fill fs-5">
+      <div class="d-flex gap-3 mt-auto">
+
+        <a href="/vendors/{{ vendor.id }}/order" class="btn btn-success flex-fill fw-bold d-flex align-items-center justify-content-center" style="font-size:1.8rem; padding:10px;">
           Order
         </a>
 
-        <a href="/vendors/{{ vendor.id }}/edit" class="btn btn-light border d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" title="Edit">
-          <i class="bi bi-pencil fs-4"></i>
+        <a href="/vendors/{{ vendor.id }}/edit" class="btn btn-light border d-flex align-items-center justify-content-center" style="width:80px; height:80px;">
+          <i class="bi bi-pencil" style="font-size:2.5rem;"></i>
         </a>
 
         <form method="post" action="/vendors/{{ vendor.id }}/delete" class="m-0">
-          <button type="submit" class="btn btn-dark d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" onclick="return confirm('Delete this vendor?')" title="Delete">
-            <i class="bi bi-trash fs-4"></i>
+          <button type="submit" class="btn btn-dark d-flex align-items-center justify-content-center" style="width:80px; height:80px;" onclick="return confirm('Delete this vendor?')">
+            <i class="bi bi-trash" style="font-size:2.5rem;"></i>
           </button>
         </form>
+
       </div>
 
     </div>
@@ -116,7 +122,7 @@
   {% endfor %}
 </div>
 {% else %}
-<p>No vendors found.</p>
+<p style="font-size:1.2rem;">No vendors found.</p>
 {% endif %}
 
 {% endblock %}

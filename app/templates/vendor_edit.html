@@ -2,80 +2,83 @@
 
 {% block content %}
 
-<div class="d-flex align-items-center gap-3 mb-4">
+<div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
   <a href="/vendors" class="text-dark">
-    <i class="bi bi-arrow-left-circle-fill fs-2"></i>
+    <i class="bi bi-arrow-left-circle-fill" style="font-size: 3rem;"></i>
   </a>
-  <h2 class="mb-0">Edit Vendor</h2>
+  <h2 class="mb-0" style="font-size: 2rem;">Edit Vendor</h2>
 </div>
 
 <div class="card p-4 shadow-sm">
 
   <form method="post" action="/vendors/{{ vendor.id }}/edit">
-
-    <div class="mb-3">
-      <label class="form-label">Vendor Name</label>
-      <input type="text" name="name" class="form-control" value="{{ vendor.name }}" required>
+    <div class="mb-4">
+      <label class="form-label" style="font-size: 1.4rem;">Vendor Name</label>
+      <input type="text" name="name" class="form-control" value="{{ vendor.name }}" required style="font-size: 1.3rem; padding: 14px;">
     </div>
 
-    <div class="mb-3">
-      <label class="form-label">Phone</label>
-      <input type="text" name="phone" class="form-control" value="{{ vendor.phone }}" required>
+    <div class="mb-4">
+      <label class="form-label" style="font-size: 1.4rem;">Phone</label>
+      <input type="text" name="phone" class="form-control" value="{{ vendor.phone }}" required style="font-size: 1.3rem; padding: 14px;">
     </div>
 
-    <div class="mb-3">
-      <label class="form-label d-block">Available Days</label>
+    <div class="mb-4">
+      <label class="form-label d-block" style="font-size: 1.4rem;">Available Days</label>
 
       <div class="d-flex flex-wrap gap-2 mb-2" id="edit-day-buttons">
-        <button type="button" class="btn btn-outline-secondary day-btn" data-day="Mon">Mon</button>
-        <button type="button" class="btn btn-outline-secondary day-btn" data-day="Tue">Tue</button>
-        <button type="button" class="btn btn-outline-secondary day-btn" data-day="Wed">Wed</button>
-        <button type="button" class="btn btn-outline-secondary day-btn" data-day="Thu">Thu</button>
-        <button type="button" class="btn btn-outline-secondary day-btn" data-day="Fri">Fri</button>
-        <button type="button" class="btn btn-outline-secondary day-btn" data-day="Sat">Sat</button>
-        <button type="button" class="btn btn-outline-secondary day-btn" data-day="Sun">Sun</button>
+        {% for d in ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] %}
+        <button type="button" class="btn btn-outline-secondary day-btn" style="font-size: 1.4rem; padding: 10px 16px; width:100px;" data-day="{{ d }}">
+          {{ d }}
+        </button>
+        {% endfor %}
       </div>
 
       <input type="hidden" name="available_days" id="available_days" value="{{ vendor.available_days }}" required>
-
-
     </div>
 
-    <div class="d-flex justify-content-end gap-2 mt-5">
-      <a href="/vendors" class="btn btn-outline-dark">Cancel</a>
-      <a href="/vendors/{{ vendor.id }}/items" class="btn btn-danger">
+    <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+
+      <a href="/vendors" class="btn btn-outline-dark w-100" style="font-size:1.4rem; padding:14px;">
+        Cancel
+      </a>
+
+      <a href="/vendors/{{ vendor.id }}/items" class="btn btn-danger w-100" style="font-size:1.4rem; padding:14px;">
         Manage Items
       </a>
-      <button class="btn btn-success">Save</button>
+
+      <button class="btn btn-success w-100" style="font-size:1.4rem; padding:14px;">
+        Save
+      </button>
+
     </div>
 
   </form>
 
-  <script>
-    const dayButtons = document.querySelectorAll(".day-btn");
-    const hiddenInput = document.getElementById("available_days");
-    const selected = hiddenInput.value ? hiddenInput.value.split(",") : [];
-
-    dayButtons.forEach(btn => {
-      if (selected.includes(btn.dataset.day)) {
-        btn.classList.add("active", "btn-dark");
-        btn.classList.remove("btn-outline-secondary");
-      }
-
-      btn.addEventListener("click", () => {
-        btn.classList.toggle("active");
-        btn.classList.toggle("btn-dark");
-        btn.classList.toggle("btn-outline-secondary");
-
-        const selectedDays = Array.from(dayButtons)
-          .filter(b => b.classList.contains("active"))
-          .map(b => b.dataset.day);
-
-        hiddenInput.value = selectedDays.join(",");
-      });
-    });
-  </script>
-
 </div>
+
+<script>
+  const dayButtons = document.querySelectorAll(".day-btn");
+  const hiddenInput = document.getElementById("available_days");
+  const selected = hiddenInput.value ? hiddenInput.value.split(",") : [];
+
+  dayButtons.forEach(btn => {
+    if (selected.includes(btn.dataset.day)) {
+      btn.classList.add("active", "btn-dark");
+      btn.classList.remove("btn-outline-secondary");
+    }
+
+    btn.addEventListener("click", () => {
+      btn.classList.toggle("active");
+      btn.classList.toggle("btn-dark");
+      btn.classList.toggle("btn-outline-secondary");
+
+      const selectedDays = Array.from(dayButtons)
+        .filter(b => b.classList.contains("active"))
+        .map(b => b.dataset.day);
+
+      hiddenInput.value = selectedDays.join(",");
+    });
+  });
+</script>
 
 {% endblock %}
