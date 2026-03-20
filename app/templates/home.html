@@ -1,21 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-  <meta charset="UTF-8">
-  <title>Home</title>
-</head>
+{% block content %}
 
-<body>
+<div class="mt-4">
 
-  <h1>Restaurant Vendor Order API</h1>
+  <h1 class="mb-3">Restaurant Vendor Order API</h1>
 
   <a href="/vendors">
-    <button style="padding:10px 20px; font-size:16px;">
-      Go to Vendors
+    <button class="btn btn-dark px-4 py-2">
+      Vendor list
     </button>
   </a>
 
-</body>
+</div>
 
-</html>
+{% endblock %}
