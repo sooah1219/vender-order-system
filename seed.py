@@ -3,24 +3,14 @@ from app.models import Vendor
 
 db = SessionLocal()
 
-# vendor = Vendor(
-#   name="Big Brothers Food",
-#   phone="7788796281"
-# )
-
-# db.add(vendor)
-# db.commit()
-
-
-
 vendor_data = [
-  {"name": "Big Brothers Food", "phone": "7788796281"},
-  {"name": "Wismettac", "phone": "7788796281"},
-  {"name": "Canaan Meat", "phone": "7788796281"},
-  {"name": "JFC", "phone": "7788796281"},
-  {"name": "D-way", "phone": "7788796281"},
-  {"name": "Ecopac", "phone": "7788796281"},
-  {"name": "Don", "phone": "7788796281"},
+  {"name": "Big Brothers Food", "phone": "7781234567"},
+  {"name": "Wismettac", "phone": "7781234567"},
+  {"name": "Canaan Meat", "phone": "7781234567"},
+  {"name": "JFC", "phone": "7781234567"},
+  {"name": "D-way", "phone": "7781234567"},
+  {"name": "Ecopac", "phone": "7781234567"},
+  {"name": "Don", "phone": "7781234567"},
 ]
 
 for item in vendor_data :
