@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer, ForeignKey
+from sqlalchemy import String, Integer, ForeignKey, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -22,7 +22,7 @@ class Item(Base):
 
     name: Mapped[str] = mapped_column(String, nullable=False)
 
-    unit_price: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    unit_price: Mapped[float | None] = mapped_column(Float, nullable=True)
 
     vendor_id: Mapped[int] = mapped_column(ForeignKey("vendors.id"), nullable=False)
 

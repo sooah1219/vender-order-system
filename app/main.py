@@ -128,7 +128,7 @@ def vendor_items_page(request: Request, vendor_id: int, db: Session = Depends(ge
 def add_item(
     vendor_id: int,
     name: str = Form(...),
-    unit_price: int | None = Form(None),
+    unit_price: float | None = Form(None),
     db: Session = Depends(get_db),
 ):
     create_item(db, vendor_id, name, unit_price)
@@ -140,7 +140,7 @@ def update_item(
     vendor_id: int,
     item_id: int,
     name: str = Form(...),
-    unit_price: int | None = Form(None),
+    unit_price: float | None = Form(None),
     db: Session = Depends(get_db),
 ):
     item = db.query(Item).filter(
