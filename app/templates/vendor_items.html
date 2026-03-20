@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="/vendors" class="text-dark">
+    <i class="bi bi-arrow-left-circle-fill fs-2"></i>
+  </a>
+
+  <h2 class="mb-0">
+    {{ vendor.name }} Items
+  </h2>
+</div>
+
+<div class="card p-4 shadow-sm mb-4">
+  <h5 class="mb-3">Add Item To Vendor</h5>
+
+  <form method="post" action="/vendors/{{ vendor.id }}/items">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-8">
+        <label class="form-label">Item Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Enter item name" required>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Unit Price</label>
+        <input type="number" name="unit_price" class="form-control" placeholder="Optional" min="0" step="1">
+      </div>
+
+      <div class="col-12">
+        <button type="submit" class="btn btn-dark">
+          Add
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="card p-4 shadow-sm">
+  <h5 class="mb-3">Current Vendor Items</h5>
+
+  {% if items %}
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Item Name</th>
+          <th>Unit Price</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr id="view-row-{{ item.id }}">
+          <td>
+            {{ item.name }}
+          </td>
+          <td>
+            {% if item.unit_price is not none %}
+            $
+            {{ item.unit_price }}
+            {% else %}
+            <span class="text-muted">-</span>
+            {% endif %}
+          </td>
+          <td class="text-end">
+            <button type="button" class="btn btn-light border d-inline-flex align-items-center justify-content-center edit-btn" style="width: 44px; height: 44px;" title="Edit" data-id="{{ item.id }}">
+              <i class="bi bi-pencil fs-4"></i>
+            </button>
+          </td>
+        </tr>
+
+        <tr id="edit-row-{{ item.id }}" class="d-none">
+          <td colspan="3">
+            <form method="post" action="/vendors/{{ vendor.id }}/items/{{ item.id }}/edit">
+              <div class="row g-2 align-items-center">
+                <div class="col-md-5">
+                  <input type="text" name="name" class="form-control" value="{{ item.name }}" required>
+                </div>
+
+                <div class="col-md-4">
+                  <input type="number" name="unit_price" class="form-control" value="{{ item.unit_price if item.unit_price is not none else '' }}" placeholder="Optional" min="0" step="1">
+                </div>
+
+                <div class="col-md-3 d-flex justify-content-end gap-2">
+                  <button type="button" class="btn btn-outline-secondary cancel-edit-btn" data-id="{{ item.id }}">
+                    Cancel
+                  </button>
+                  <button type="submit" class="btn btn-success">
+                    Save
+                  </button>
+                </div>
+              </div>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted mb-0">No items added for this vendor yet.</p>
+  {% endif %}
+</div>
+
+<script>
+  function toggleEdit(itemId) {
+    const viewRow = document.getElementById(`view-row-${itemId}`);
+    const editRow = document.getElementById(`edit-row-${itemId}`);
+
+    if (viewRow && editRow) {
+      viewRow.classList.toggle("d-none");
+      editRow.classList.toggle("d-none");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".edit-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        toggleEdit(btn.dataset.id);
+      });
+    });
+
+    document.querySelectorAll(".cancel-edit-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        toggleEdit(btn.dataset.id);
+      });
+    });
+  });
+</script>
+
+{% endblock %}

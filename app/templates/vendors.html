@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">Vendor List</h2>
+</div>
+
+<div class="card p-4 shadow-sm mb-4">
+  <h5 class="mb-3">Add Vendor</h5>
+
+  <form method="post" action="/vendors">
+    <div class="row g-3">
+      <div class="col-md-5">
+        <label class="form-label">Vendor Name</label>
+        <input type="text" name="name" class="form-control" required>
+      </div>
+
+      <div class="col-md-5">
+        <label class="form-label">Phone</label>
+        <input type="text" name="phone" class="form-control" required>
+      </div>
+
+      <div class="col-md-12">
+        <label class="form-label d-block">Available Days</label>
+
+        <div class="d-flex flex-wrap gap-2 mb-2" id="day-buttons">
+          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Mon">Mon</button>
+          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Tue">Tue</button>
+          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Wed">Wed</button>
+          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Thu">Thu</button>
+          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Fri">Fri</button>
+          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Sat">Sat</button>
+          <button type="button" class="btn btn-outline-secondary day-btn" data-day="Sun">Sun</button>
+        </div>
+
+        <input type="hidden" name="available_days" id="available_days" required>
+      </div>
+
+      <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-dark w-100">
+          Add Vendor
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  const dayButtons = document.querySelectorAll(".day-btn");
+  const hiddenInput = document.getElementById("available_days");
+
+  function updateAvailableDays() {
+    const selectedDays = Array.from(dayButtons)
+      .filter(btn => btn.classList.contains("active"))
+      .map(btn => btn.dataset.day);
+
+    hiddenInput.value = selectedDays.join(",");
+  }
+
+  dayButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      btn.classList.toggle("active");
+      btn.classList.toggle("btn-dark");
+      btn.classList.toggle("btn-outline-secondary");
+      updateAvailableDays();
+    });
+  });
+</script>
+
+{% if vendors %}
+<div class="row">
+  {% for vendor in vendors %}
+  <div class="col-12 mb-3">
+    <div class="card p-4 h-100 shadow-sm d-flex flex-column" style="min-height: 220px;">
+
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <div class="fw-bold fs-4">
+            {{ vendor.name }}
+          </div>
+          <div class="text-muted">
+            {{ vendor.phone }}
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap justify-content-end">
+          {% if vendor.available_days %}
+          {% for day in vendor.available_days.split(",") %}
+          <span class="badge rounded-pill px-3 py-2 fs-6 {% if day == today %}bg-danger text-white{% else %}bg-light text-dark border{% endif %}">
+            {{ day }}
+          </span>
+          {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="d-flex gap-3 mt-auto align-items-center">
+        <a href="/vendors/{{ vendor.id }}/order" class="btn btn-success py-2 flex-fill fs-5">
+          Order
+        </a>
+
+        <a href="/vendors/{{ vendor.id }}/edit" class="btn btn-light border d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" title="Edit">
+          <i class="bi bi-pencil fs-4"></i>
+        </a>
+
+        <form method="post" action="/vendors/{{ vendor.id }}/delete" class="m-0">
+          <button type="submit" class="btn btn-dark d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" onclick="return confirm('Delete this vendor?')" title="Delete">
+            <i class="bi bi-trash fs-4"></i>
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No vendors found.</p>
+{% endif %}
+
+{% endblock %}

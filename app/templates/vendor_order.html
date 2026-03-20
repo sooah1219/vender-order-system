@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex align-items-center gap-3">
+    <a href="/vendors" class="text-dark">
+      <i class="bi bi-arrow-left-circle-fill fs-2"></i>
+    </a>
+
+    <h2 class="mb-0">
+      {{ vendor.name }} Order
+    </h2>
+  </div>
+
+  <div class="text-muted fs-5">
+    {{ today }}
+  </div>
+</div>
+
+<form method="post" action="/vendors/{{ vendor.id }}/order" id="orderForm">
+  <div class="row">
+
+    <div class="col-md-8">
+      <div class="card p-3 mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Order Items</h5>
+          <a href="/vendors/{{ vendor.id }}/items" class="btn btn-outline-dark btn-sm">
+            Manage Items
+          </a>
+        </div>
+
+        {% if items %}
+        {% for item in items %}
+        <div class="row align-items-center mb-2 item-row" data-price="{{ item.unit_price or 0 }}" data-name="{{ item.name }}">
+          <div class="col-5">
+            {{ item.name }}
+          </div>
+
+          <div class="col-3">
+            <input type="number" name="qty_{{ item.id }}" class="form-control item-qty" placeholder="Qty" min="0" step="1">
+          </div>
+
+          <div class="col-2 text-muted">
+            {% if item.unit_price is not none %}
+            $
+            {{ item.unit_price }}
+            {% else %}
+            -
+            {% endif %}
+          </div>
+
+          <div class="col-2">
+            <span class="line-total">-</span>
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="text-muted mb-0">No items added for this vendor yet.</p>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card p-3">
+        <h5>Summary</h5>
+
+        <hr>
+
+        <div id="orderSummaryList" class="mb-3">
+          <p class="text-muted mb-0">No items selected.</p>
+        </div>
+
+        <hr>
+
+        <p>Total Amount</p>
+        <h3 id="grandTotal">$0</h3>
+
+        <hr>
+
+        <button type="submit" class="btn btn-primary w-100">
+          Confirm Order
+        </button>
+      </div>
+    </div>
+
+  </div>
+</form>
+
+<script>
+  function calculateTotals() {
+    let grandTotal = 0;
+    const rows = document.querySelectorAll(".item-row");
+    const summaryList = document.getElementById("orderSummaryList");
+
+    let summaryHtml = "";
+    let hasSelectedItems = false;
+
+    rows.forEach((row) => {
+      const qtyInput = row.querySelector(".item-qty");
+      const price = parseFloat(row.dataset.price) || 0;
+      const itemName = row.dataset.name;
+
+      const qty = parseInt(qtyInput.value) || 0;
+      let lineTotal = 0;
+
+      if (qty > 0) {
+        lineTotal = qty * price;
+        hasSelectedItems = true;
+        summaryHtml += `<div class="d-flex justify-content-between mb-2">
+          <span>${itemName}</span>
+          <span>x ${qty}</span>
+        </div>`;
+      }
+
+      row.querySelector(".line-total").innerText =
+        lineTotal > 0 ? "$" + lineTotal.toFixed(2) : "-";
+
+      grandTotal += lineTotal;
+    });
+
+    if (hasSelectedItems) {
+      summaryList.innerHTML = summaryHtml;
+    } else {
+      summaryList.innerHTML = `<p class="text-muted mb-0">No items selected.</p>`;
+    }
+
+    document.getElementById("grandTotal").innerText = "$" + grandTotal.toFixed(2);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const qtyInputs = document.querySelectorAll(".item-qty");
+
+    qtyInputs.forEach((input) => {
+      input.addEventListener("input", calculateTotals);
+      input.addEventListener("change", calculateTotals);
+    });
+
+    calculateTotals();
+  });
+</script>
+
+{% endblock %}
