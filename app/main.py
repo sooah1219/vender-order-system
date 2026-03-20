@@ -30,9 +30,8 @@ def get_db():
 
 
 @app.get("/")
-def home():
-    return {"message": "Restaurant Vendor Order API"}
-
+def home(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request})
 
 @app.get("/vendors", response_class=HTMLResponse)
 def list_vendors(request: Request, db: Session = Depends(get_db)):
