@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from app.database import SessionLocal, engine, Base
 from app.crud import (
@@ -37,7 +38,7 @@ def home(request: Request):
 @app.get("/vendors", response_class=HTMLResponse)
 def list_vendors(request: Request, db: Session = Depends(get_db)):
     vendors = get_vendors(db)
-    today = datetime.today().strftime("%a")
+    today = datetime.now(ZoneInfo("America/Vancouver")).strftime("%a")
     return templates.TemplateResponse(
         "vendors.html",
         {
@@ -164,7 +165,7 @@ def vendor_order(request: Request, vendor_id: int, db: Session = Depends(get_db)
         return RedirectResponse(url="/vendors", status_code=303)
 
     items = get_items_by_vendor(db, vendor_id)
-    today = datetime.today().strftime("%Y-%m-%d (%a)")
+    today = datetime.now(ZoneInfo("America/Vancouver")).strftime("%Y-%m-%d (%a)")
 
     return templates.TemplateResponse(
         "vendor_order.html",
