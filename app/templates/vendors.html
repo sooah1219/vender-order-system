@@ -4,30 +4,30 @@
 
 <div class="mb-4">
 
-  <h2 class="mb-4" style="font-size: 3rem;">Vendor List</h2>
+  <h2 class="mb-4" style="font-size: 1.8rem;">Vendor List</h2>
 
   <div class="card p-4 shadow-sm mb-4">
-    <h5 class="mb-4" style="font-size: 2rem;">Add Vendor</h5>
+    <h5 class="mb-4" style="font-size: 1.3rem;">Add Vendor</h5>
 
     <form method="post" action="/vendors">
       <div class="row g-4">
 
         <div class="col-12">
-          <label class="form-label" style="font-size: 1.8rem;">Vendor Name</label>
-          <input type="text" name="name" class="form-control" style="font-size:1.3rem; padding:14px;" required>
+          <label class="form-label" style="font-size: 1.1rem;">Vendor Name</label>
+          <input type="text" name="name" class="form-control" style="font-size:1.1rem; padding:10px;" required>
         </div>
 
         <div class="col-12">
-          <label class="form-label" style="font-size: 1.8rem;">Phone</label>
-          <input type="text" name="phone" class="form-control" style="font-size:1.3rem; padding:14px;" required>
+          <label class="form-label" style="font-size: 1.1rem;">Phone</label>
+          <input type="text" name="phone" class="form-control" style="font-size:1.1rem; padding:10px;" required>
         </div>
 
         <div class="col-12">
-          <label class="form-label d-block" style="font-size: 1.8rem;">Available Days</label>
+          <label class="form-label d-block" style="font-size: 1.1rem;">Available Days</label>
 
           <div class="d-flex flex-wrap gap-2 mb-2" id="day-buttons">
             {% for d in ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] %}
-            <button type="button" class="btn btn-outline-secondary day-btn" style="font-size:1.5rem; padding:10px 20px; width:100px;" data-day="{{ d }}">
+            <button type="button" class="btn btn-outline-secondary day-btn" style="font-size:1rem; padding:8px; width:90px;" data-day="{{ d }}">
               {{ d }}
             </button>
             {% endfor %}
@@ -37,7 +37,7 @@
         </div>
 
         <div class="col-12">
-          <button type="submit" class="btn btn-dark w-100" style="font-size:1.8rem; padding:16px;">
+          <button type="submit" class="btn btn-dark w-100" style="font-size:1.2rem; padding:12px;">
             Add Vendor
           </button>
         </div>
@@ -77,14 +77,14 @@
       <div class="mb-3">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-          <div class="fw-bold" style="font-size: 2.5rem;">
+          <div class="fw-bold" style="font-size: 1.5rem;">
             {{ vendor.name }}
           </div>
 
           <div class="d-flex gap-2 flex-wrap">
             {% if vendor.available_days %}
             {% for day in vendor.available_days.split(",") %}
-            <span class="badge rounded-pill px-3 py-3 {% if day == today %}bg-danger text-white{% else %}bg-light text-dark border{% endif %}" style="font-size: 1.4rem; width:120px;">
+            <span class="badge rounded-pill px-3 py-2 {% if day == today %}bg-danger text-white{% else %}bg-light text-dark border{% endif %}" style="font-size: 1rem; width:70px;">
               {{ day }}
             </span>
             {% endfor %}
@@ -93,7 +93,7 @@
 
         </div>
 
-        <div class="text-muted mt-2" style="font-size: 1.5rem;">
+        <div class="text-muted mt-2" style="font-size: 1rem;">
           {{ vendor.phone }}
         </div>
 
@@ -101,19 +101,13 @@
 
       <div class="d-flex gap-3 mt-auto">
 
-        <a href="/vendors/{{ vendor.id }}/order" class="btn btn-success flex-fill fw-bold d-flex align-items-center justify-content-center" style="font-size:1.8rem; padding:10px;">
+        <a href="/vendors/{{ vendor.id }}/order" class="btn btn-success flex-fill fw-bold d-flex align-items-center justify-content-center" style="font-size:1.3rem; padding:5px;">
           Order
         </a>
 
-        <a href="/vendors/{{ vendor.id }}/edit" class="btn btn-light border d-flex align-items-center justify-content-center" style="width:80px; height:80px;">
-          <i class="bi bi-pencil" style="font-size:2.5rem;"></i>
+        <a href="/vendors/{{ vendor.id }}/edit" class="btn btn-light border d-flex align-items-center justify-content-center" style="width:60px; height:60px;">
+          <i class="bi bi-pencil" style="font-size:1.6rem;"></i>
         </a>
-
-        <form method="post" action="/vendors/{{ vendor.id }}/delete" class="m-0">
-          <button type="submit" class="btn btn-dark d-flex align-items-center justify-content-center" style="width:80px; height:80px;" onclick="return confirm('Delete this vendor?')">
-            <i class="bi bi-trash" style="font-size:2.5rem;"></i>
-          </button>
-        </form>
 
       </div>
 
@@ -122,7 +116,7 @@
   {% endfor %}
 </div>
 {% else %}
-<p style="font-size:1.2rem;">No vendors found.</p>
+<p style="font-size:1rem;">No vendors found.</p>
 {% endif %}
 
 {% endblock %}

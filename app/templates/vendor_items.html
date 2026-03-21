@@ -4,31 +4,31 @@
 
 <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
   <a href="/vendors" class="text-dark">
-    <i class="bi bi-arrow-left-circle-fill" style="font-size: 3rem;"></i>
+    <i class="bi bi-arrow-left-circle-fill" style="font-size: 2rem;"></i>
   </a>
 
-  <h2 class="mb-0" style="font-size: 2.2rem;">
+  <h2 class="mb-0" style="font-size: 1.4rem;">
     {{ vendor.name }} Items
   </h2>
 </div>
 
 <div class="card p-4 shadow-sm mb-4">
-  <h5 class="mb-4" style="font-size: 1.8rem;">Add Item To Vendor</h5>
+  <h5 class="mb-4" style="font-size: 1.3rem;">Add Item To Vendor</h5>
 
   <form method="post" action="/vendors/{{ vendor.id }}/items">
     <div class="row g-4 align-items-end">
       <div class="col-12 col-md-8">
-        <label class="form-label" style="font-size: 1.4rem;">Item Name</label>
-        <input type="text" name="name" class="form-control" placeholder="Enter item name" required style="font-size: 1.5rem; padding: 14px;">
+        <label class="form-label" style="font-size: 1.1rem;">Item Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Enter item name" required style="font-size: 1.2rem; padding: 10px;">
       </div>
 
       <div class="col-12 col-md-4">
-        <label class="form-label" style="font-size: 1.4rem;">Unit Price</label>
-        <input type="number" name="unit_price" class="form-control" placeholder="Price" min="0" step="0.01" style="font-size: 1.5rem; padding: 14px;">
+        <label class="form-label" style="font-size: 1.1rem;">Unit Price</label>
+        <input type="number" name="unit_price" class="form-control" placeholder="Price" min="0" step="0.01" style="font-size: 1.2rem; padding: 10px;">
       </div>
 
       <div class="col-12">
-        <button type="submit" class="btn btn-dark w-100" style="font-size: 1.5rem; padding: 14px;">
+        <button type="submit" class="btn btn-dark w-100" style="font-size: 1.2rem; padding: 10px;">
           Add
         </button>
       </div>
@@ -36,16 +36,15 @@
   </form>
 </div>
 
-<div class="card p-4 shadow-sm">
-  <h5 class="mb-4" style="font-size: 1.8rem;">Current Vendor Items</h5>
+<div class="card p-4 mb-5 shadow-sm">
+  <h5 class="mb-4" style="font-size: 1.3rem;">Current Vendor Items</h5>
 
   {% if items %}
   <div class="d-flex gap-3 mb-4 flex-wrap">
     <div class="flex-grow-1">
-      <input type="text" id="searchInput" class="form-control" placeholder="Search item..." style="font-size: 1.4rem; padding: 14px;">
+      <input type="text" id="searchInput" class="form-control" placeholder="Search item..." style="font-size: 1.1rem; padding: 10px;">
     </div>
-
-    <button type="button" id="sortBtn" class="btn btn-outline-secondary" style="font-size: 1.3rem; padding: 12px 18px; min-width: 140px;">
+    <button type="button" id="sortBtn" class="btn btn-dark" style="font-size: 1rem; padding: 6px 12px; ">
       Sort A-Z
     </button>
   </div>
@@ -55,14 +54,14 @@
     <div class="item-wrapper" data-name="{{ item.name|lower }}" data-price="{{ item.unit_price if item.unit_price is not none else 0 }}">
       <div id="view-row-{{ item.id }}" class="card border-0 bg-light-subtle">
         <div class="card-body p-3">
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-1">
             <div class="flex-grow-1">
               <div class="d-flex justify-content-between align-items-center p-3">
-                <div class="fw-bold" style="font-size: 1.5rem;">
+                <div class="fw-bold" style="font-size: 1.2rem;">
                   {{ item.name }}
                 </div>
 
-                <div class="text-muted" style="font-size: 1.5rem;">
+                <div class="text-muted" style="font-size: 1.1rem;">
                   {% if item.unit_price is not none %}
                   $
                   {{ '%.2f'|format(item.unit_price) }}
@@ -73,8 +72,8 @@
               </div>
             </div>
 
-            <button type="button" class="btn btn-light border d-inline-flex align-items-center justify-content-center edit-btn" style="width: 80px; height: 80px;" title="Edit" data-id="{{ item.id }}">
-              <i class="bi bi-pencil" style="font-size: 2rem;"></i>
+            <button type="button" class="btn btn-light border d-inline-flex align-items-center justify-content-center edit-btn" style="width: 50px; height: 50px;" title="Edit" data-id="{{ item.id }}">
+              <i class="bi bi-pencil" style="font-size: 1.4rem;"></i>
             </button>
           </div>
         </div>
@@ -85,18 +84,18 @@
           <form method="post" action="/vendors/{{ vendor.id }}/items/{{ item.id }}/edit">
             <div class="row g-3">
               <div class="col-12 col-md-5">
-                <input type="text" name="name" class="form-control" value="{{ item.name }}" required style="font-size: 1.4rem; padding: 14px;">
+                <input type="text" name="name" class="form-control" value="{{ item.name }}" required style="font-size: 1.1rem; padding: 10px;">
               </div>
 
               <div class="col-12 col-md-4">
-                <input type="number" name="unit_price" class="form-control" value="{{ item.unit_price if item.unit_price is not none else '' }}" placeholder="Optional" min="0" step="0.01" style="font-size: 1.4rem; padding: 14px;">
+                <input type="number" name="unit_price" class="form-control" value="{{ item.unit_price if item.unit_price is not none else '' }}" placeholder="Optional" min="0" step="0.01" style="font-size: 1.1rem; padding: 10px;">
               </div>
 
               <div class="col-12 col-md-3 d-flex gap-2">
-                <button type="button" class="btn btn-outline-secondary flex-fill cancel-edit-btn" data-id="{{ item.id }}" style="font-size: 1.4rem; padding: 12px;">
+                <button type="button" class="btn btn-outline-secondary flex-fill cancel-edit-btn" data-id="{{ item.id }}" style="font-size: 1rem; padding: 8px;">
                   Cancel
                 </button>
-                <button type="submit" class="btn btn-success flex-fill" style="font-size: 1.4rem; padding: 12px;">
+                <button type="submit" class="btn btn-success flex-fill" style="font-size: 1rem; padding: 8px;">
                   Save
                 </button>
               </div>
@@ -108,11 +107,11 @@
     {% endfor %}
   </div>
 
-  <p id="noSearchResult" class="text-muted mb-0 d-none" style="font-size: 1.2rem;">
+  <p id="noSearchResult" class="text-muted mb-0 d-none" style="font-size: 1rem;">
     No matching items found.
   </p>
   {% else %}
-  <p class="text-muted mb-0" style="font-size: 1.2rem;">No items added for this vendor yet.</p>
+  <p class="text-muted mb-0" style="font-size: 1rem;">No items added for this vendor yet.</p>
   {% endif %}
 </div>
 
@@ -122,7 +121,6 @@
   function toggleEdit(itemId) {
     const viewRow = document.getElementById(`view-row-${itemId}`);
     const editRow = document.getElementById(`edit-row-${itemId}`);
-
     if (viewRow && editRow) {
       viewRow.classList.toggle("d-none");
       editRow.classList.toggle("d-none");
@@ -134,10 +132,8 @@
     const itemWrappers = document.querySelectorAll(".item-wrapper");
     const noResult = document.getElementById("noSearchResult");
     let visibleCount = 0;
-
     itemWrappers.forEach((wrapper) => {
       const itemName = wrapper.dataset.name;
-
       if (itemName.includes(keyword)) {
         wrapper.classList.remove("d-none");
         visibleCount++;
@@ -145,7 +141,6 @@
         wrapper.classList.add("d-none");
       }
     });
-
     if (visibleCount === 0) {
       noResult.classList.remove("d-none");
     } else {
@@ -157,44 +152,34 @@
     const container = document.getElementById("itemsContainer");
     const sortBtn = document.getElementById("sortBtn");
     const items = Array.from(container.querySelectorAll(".item-wrapper"));
-
     items.sort((a, b) => {
       const nameA = a.dataset.name;
       const nameB = b.dataset.name;
-
       return sortAscending ?
         nameA.localeCompare(nameB) :
         nameB.localeCompare(nameA);
     });
-
     items.forEach((item) => container.appendChild(item));
-
     sortBtn.innerText = sortAscending ? "Sort Z-A" : "Sort A-Z";
     sortAscending = !sortAscending;
-
     filterItems();
   }
-
   document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".edit-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         toggleEdit(btn.dataset.id);
       });
     });
-
     document.querySelectorAll(".cancel-edit-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         toggleEdit(btn.dataset.id);
       });
     });
-
     const searchInput = document.getElementById("searchInput");
     const sortBtn = document.getElementById("sortBtn");
-
     if (searchInput) {
       searchInput.addEventListener("input", filterItems);
     }
-
     if (sortBtn) {
       sortBtn.addEventListener("click", sortItems);
     }
