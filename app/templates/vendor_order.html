@@ -12,10 +12,10 @@
       {{ vendor.name }} Order
     </h2>
   </div>
+
   <div class="text-muted" style="font-size: 1rem;">
     {{ today }}
   </div>
-
 </div>
 
 <form method="post" action="/vendors/{{ vendor.id }}/order" id="orderForm">
@@ -25,6 +25,7 @@
       <div class="card p-4 mb-3 shadow-sm">
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
           <h5 class="mb-0" style="font-size: 1.3rem;">Order Items</h5>
+
           <a href="/vendors/{{ vendor.id }}/items" class="btn btn-primary" style="font-size: 1rem; padding: 6px 12px;">
             Manage Items
           </a>
@@ -35,7 +36,7 @@
             <input type="text" id="searchInput" class="form-control" placeholder="Search item..." style="font-size: 1.2rem; padding: 10px;">
           </div>
 
-          <button type="button" id="sortBtn" class="btn btn-dark" style="font-size: 1rem; padding: 6px 12px; ">
+          <button type="button" id="sortBtn" class="btn btn-dark" style="font-size: 1rem; padding: 6px 12px;">
             Sort A-Z
           </button>
         </div>
@@ -80,7 +81,9 @@
           No matching items found.
         </p>
         {% else %}
-        <p class="text-muted mb-0" style="font-size: 1rem;">No items added for this vendor yet.</p>
+        <p class="text-muted mb-0" style="font-size: 1rem;">
+          No items added for this vendor yet.
+        </p>
         {% endif %}
       </div>
     </div>
@@ -102,7 +105,7 @@
 
         <hr>
 
-        <button type="submit" class="btn btn-success fw-bold w-100 mb-2 mt-3" style="font-size: 1.2rem; padding: 10px;">
+        <button type="button" id="confirmOrderBtn" class="btn btn-success fw-bold w-100 mb-2 mt-3" style="font-size: 1.2rem; padding: 10px;">
           Confirm Order
         </button>
       </div>
@@ -111,8 +114,34 @@
   </div>
 </form>
 
+<div class="modal fade" id="confirmOrderModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Order</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body" style="font-size: 1.1rem;">
+        Order is confirmed.
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button type="button" id="finalConfirmBtn" class="btn btn-success">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   let sortAscending = true;
+  let shouldSubmitOrder = false;
 
   function calculateTotals() {
     let grandTotal = 0;
@@ -154,11 +183,16 @@
       summaryList.innerHTML = `<p class="text-muted mb-0">No items selected.</p>`;
     }
 
-    document.getElementById("grandTotal").innerText = "$" + grandTotal.toFixed(2);
+    document.getElementById("grandTotal").innerText =
+      "$" + grandTotal.toFixed(2);
   }
 
   function filterItems() {
-    const keyword = document.getElementById("searchInput").value.toLowerCase().trim();
+    const keyword = document
+      .getElementById("searchInput")
+      .value.toLowerCase()
+      .trim();
+
     const rows = document.querySelectorAll(".item-row");
     const noResult = document.getElementById("noSearchResult");
 
@@ -187,17 +221,18 @@
   function sortItems() {
     const container = document.getElementById("itemsContainer");
     const sortBtn = document.getElementById("sortBtn");
+
+    if (!container || !sortBtn) return;
+
     const rows = Array.from(container.querySelectorAll(".item-row"));
 
     rows.sort((a, b) => {
       const nameA = a.dataset.name.toLowerCase();
       const nameB = b.dataset.name.toLowerCase();
 
-      if (sortAscending) {
-        return nameA.localeCompare(nameB);
-      } else {
-        return nameB.localeCompare(nameA);
-      }
+      return sortAscending ?
+        nameA.localeCompare(nameB) :
+        nameB.localeCompare(nameA);
     });
 
     rows.forEach((row) => container.appendChild(row));
@@ -212,6 +247,16 @@
     const qtyInputs = document.querySelectorAll(".item-qty");
     const searchInput = document.getElementById("searchInput");
     const sortBtn = document.getElementById("sortBtn");
+    const confirmOrderBtn = document.getElementById("confirmOrderBtn");
+    const finalConfirmBtn = document.getElementById("finalConfirmBtn");
+    const orderForm = document.getElementById("orderForm");
+    const modalEl = document.getElementById("confirmOrderModal");
+
+    if (!modalEl || !confirmOrderBtn || !finalConfirmBtn || !orderForm) return;
+
+    const modal = new bootstrap.Modal(modalEl);
+    const modalTitle = modalEl.querySelector(".modal-title");
+    const modalBody = modalEl.querySelector(".modal-body");
 
     qtyInputs.forEach((input) => {
       input.addEventListener("input", calculateTotals);
@@ -225,6 +270,40 @@
     if (sortBtn) {
       sortBtn.addEventListener("click", sortItems);
     }
+
+    confirmOrderBtn.addEventListener("click", () => {
+      let hasQty = false;
+
+      qtyInputs.forEach((input) => {
+        const qty = parseInt(input.value) || 0;
+        if (qty > 0) {
+          hasQty = true;
+        }
+      });
+
+      if (!hasQty) {
+        shouldSubmitOrder = false;
+        modalTitle.textContent = "No Quantity";
+        modalBody.textContent = "There is no order quantity selected.";
+        finalConfirmBtn.textContent = "OK";
+        modal.show();
+        return;
+      }
+
+      shouldSubmitOrder = true;
+      modalTitle.textContent = "Confirm Order";
+      modalBody.textContent = "Order is confirmed.";
+      finalConfirmBtn.textContent = "OK";
+      modal.show();
+    });
+
+    finalConfirmBtn.addEventListener("click", () => {
+      if (shouldSubmitOrder) {
+        orderForm.submit();
+      } else {
+        modal.hide();
+      }
+    });
 
     calculateTotals();
   });
