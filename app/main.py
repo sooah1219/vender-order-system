@@ -1,26 +1,24 @@
-from datetime import datetime
-
-from fastapi import FastAPI, Request, Depends, Form
+from fastapi import FastAPI, Depends, Request, Form
+from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from app.database import SessionLocal, engine, Base
-from app.models import Vendor, Item, OrderHistory
 from app.crud import (
     create_vendor,
     get_vendors,
     get_vendor_by_id,
     get_items_by_vendor,
     create_item,
-    get_item_by_id,
-    delete_item,
     create_order_history,
     get_order_history,
 )
+from app.models import Item
+from app.sms import send_order_sms
 
 app = FastAPI()
-
 templates = Jinja2Templates(directory="app/templates")
 
 Base.metadata.create_all(bind=engine)
@@ -40,44 +38,83 @@ def send_order_sms(phone: str, message: str):
 
 
 @app.get("/", response_class=HTMLResponse)
-def root():
-    return RedirectResponse(url="/vendors", status_code=303)
+def home(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request})
 
 
 @app.get("/vendors", response_class=HTMLResponse)
-def vendor_list_page(request: Request, db: Session = Depends(get_db)):
+def list_vendors(request: Request, db: Session = Depends(get_db)):
     vendors = get_vendors(db)
+    today = datetime.now(ZoneInfo("America/Vancouver")).strftime("%a")
     return templates.TemplateResponse(
         "vendors.html",
         {
             "request": request,
             "vendors": vendors,
+            "today": today,
         },
     )
 
 
 @app.post("/vendors")
-def create_vendor_route(
+def add_vendor(
     name: str = Form(...),
     phone: str = Form(...),
-    available_days: str = Form(""),
+    available_days: str = Form(...),
     db: Session = Depends(get_db),
 ):
-    create_vendor(
-        db=db,
-        name=name,
-        phone=phone,
-        available_days=available_days,
+    create_vendor(db, name, phone, available_days)
+    return RedirectResponse(url="/vendors", status_code=303)
+
+
+@app.get("/vendors/{vendor_id}/edit", response_class=HTMLResponse)
+def edit_vendor_page(request: Request, vendor_id: int, db: Session = Depends(get_db)):
+    vendor = get_vendor_by_id(db, vendor_id)
+
+    if not vendor:
+        return RedirectResponse(url="/vendors", status_code=303)
+
+    return templates.TemplateResponse(
+        "vendor_edit.html",
+        {
+            "request": request,
+            "vendor": vendor,
+        },
     )
+
+
+@app.post("/vendors/{vendor_id}/edit")
+def update_vendor(
+    vendor_id: int,
+    name: str = Form(...),
+    phone: str = Form(...),
+    available_days: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    vendor = get_vendor_by_id(db, vendor_id)
+
+    if vendor:
+        vendor.name = name
+        vendor.phone = phone
+        vendor.available_days = available_days
+        db.commit()
+
+    return RedirectResponse(url="/vendors", status_code=303)
+
+
+@app.post("/vendors/{vendor_id}/delete")
+def delete_vendor(vendor_id: int, db: Session = Depends(get_db)):
+    vendor = get_vendor_by_id(db, vendor_id)
+
+    if vendor:
+        db.delete(vendor)
+        db.commit()
+
     return RedirectResponse(url="/vendors", status_code=303)
 
 
 @app.get("/vendors/{vendor_id}/items", response_class=HTMLResponse)
-def vendor_items_page(
-    vendor_id: int,
-    request: Request,
-    db: Session = Depends(get_db),
-):
+def vendor_items_page(request: Request, vendor_id: int, db: Session = Depends(get_db)):
     vendor = get_vendor_by_id(db, vendor_id)
 
     if not vendor:
@@ -96,64 +133,46 @@ def vendor_items_page(
 
 
 @app.post("/vendors/{vendor_id}/items")
-def create_item_route(
+def add_item(
     vendor_id: int,
     name: str = Form(...),
-    unit_price: str = Form(""),
+    unit_price: float | None = Form(None),
     db: Session = Depends(get_db),
 ):
-    vendor = get_vendor_by_id(db, vendor_id)
-
-    if not vendor:
-        return RedirectResponse(url="/vendors", status_code=303)
-
-    parsed_price: float | None = None
-
-    if unit_price.strip() != "":
-        try:
-            parsed_price = float(unit_price)
-        except ValueError:
-            parsed_price = None
-
-    create_item(
-        db=db,
-        vendor_id=vendor_id,
-        name=name,
-        unit_price=parsed_price,
-    )
-
+    create_item(db, vendor_id, name, unit_price)
     return RedirectResponse(url=f"/vendors/{vendor_id}/items", status_code=303)
 
 
-@app.post("/items/{item_id}/delete")
-def delete_item_route(
+@app.post("/vendors/{vendor_id}/items/{item_id}/edit")
+def update_item(
+    vendor_id: int,
     item_id: int,
+    name: str = Form(...),
+    unit_price: float | None = Form(None),
     db: Session = Depends(get_db),
 ):
-    item = get_item_by_id(db, item_id)
+    item = db.query(Item).filter(
+        Item.id == item_id,
+        Item.vendor_id == vendor_id
+    ).first()
 
-    if not item:
-        return RedirectResponse(url="/vendors", status_code=303)
-
-    vendor_id = item.vendor_id
-    delete_item(db, item_id)
+    if item:
+        item.name = name
+        item.unit_price = unit_price
+        db.commit()
 
     return RedirectResponse(url=f"/vendors/{vendor_id}/items", status_code=303)
 
 
 @app.get("/vendors/{vendor_id}/order", response_class=HTMLResponse)
-def vendor_order_page(
-    vendor_id: int,
-    request: Request,
-    db: Session = Depends(get_db),
-):
+def vendor_order(request: Request, vendor_id: int, db: Session = Depends(get_db)):
     vendor = get_vendor_by_id(db, vendor_id)
 
     if not vendor:
         return RedirectResponse(url="/vendors", status_code=303)
 
     items = get_items_by_vendor(db, vendor_id)
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = datetime.now(ZoneInfo("America/Vancouver")).strftime("%Y-%m-%d (%a)")
 
     return templates.TemplateResponse(
         "vendor_order.html",

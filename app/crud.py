@@ -1,5 +1,5 @@
 from datetime import datetime, time
-
+from zoneinfo import ZoneInfo
 from sqlalchemy.orm import Session
 
 from app.models import Vendor, Item, OrderHistory
@@ -63,7 +63,6 @@ def delete_item(db: Session, item_id: int):
 
     return item
 
-
 def create_order_history(
     db: Session,
     vendor_id: int,
@@ -76,6 +75,7 @@ def create_order_history(
         vendor_name=vendor_name,
         order_items_text=order_items_text,
         total_amount=total_amount,
+        ordered_at=datetime.now(ZoneInfo("America/Vancouver")),
     )
     db.add(order)
     db.commit()

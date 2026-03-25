@@ -57,19 +57,42 @@
       </thead>
       <tbody>
         {% for order in orders %}
+        {% set lines = order.order_items_text.split('\n') %}
         <tr>
           <td style="min-width: 160px;">
             {{ order.ordered_at.strftime("%Y-%m-%d %I:%M %p") }}
           </td>
+
           <td style="min-width: 150px;">
             {{ order.vendor_name }}
           </td>
-          <td style="white-space: pre-line; min-width: 260px;">
-            {{ order.order_items_text }}
+
+          <td style="min-width: 220px;">
+            <button class="btn btn-sm btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#order-details-{{ order.id }}" aria-expanded="false" aria-controls="order-details-{{ order.id }}">
+              View Details
+            </button>
           </td>
+
           <td class="text-end fw-bold" style="min-width: 120px;">
             $
             {{ '%.2f'|format(order.total_amount) }}
+          </td>
+        </tr>
+
+        <tr class="border-0">
+          <td colspan="4" class="pt-0 border-0">
+            <div class="collapse" id="order-details-{{ order.id }}">
+              <div class="border rounded-3 p-3 bg-light mt-2">
+                <div class="fw-semibold mb-2">Ordered Items</div>
+                <ul class="mb-0 ps-3">
+                  {% for line in lines %}
+                  <li class="mb-1">
+                    {{ line }}
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
           </td>
         </tr>
         {% endfor %}

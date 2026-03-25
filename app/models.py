@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from zoneinfo import ZoneInfo
 from sqlalchemy import String, Float, ForeignKey, DateTime, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -67,7 +67,7 @@ class OrderHistory(Base):
 
     ordered_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow,
+        default=lambda: datetime.now(ZoneInfo("America/Vancouver")).replace(tzinfo=None),
         nullable=False
     )
 
