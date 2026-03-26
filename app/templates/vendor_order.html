@@ -68,7 +68,12 @@
                 </td>
 
                 <td class="py-1 px-2 text-center">
-                  <input type="number" name="qty_{{ item.id }}" class="form-control form-control-sm item-qty text-center mx-auto" placeholder="0" min="0" step="1" style="font-size: 0.8rem; padding: 2px 4px; max-width: 64px; height: 30px;">
+                  <input type="number" name="qty_{{ item.id }}" class="form-control form-control-sm item-qty text-center mx-auto" placeholder="0" min="0" step="1" inputmode="numeric" style="
+                    font-size: 16px;   /* 핵심 */
+                    padding: 2px 4px;
+                    max-width: 64px;
+                    height: 30px;
+                  ">
                 </td>
 
                 <td class="py-1 px-2 text-end">
