@@ -44,8 +44,20 @@ def home(request: Request):
 
 @app.get("/vendors", response_class=HTMLResponse)
 def list_vendors(request: Request, db: Session = Depends(get_db)):
+
     vendors = get_vendors(db)
-    today = datetime.now(ZoneInfo("America/Vancouver")).strftime("%a")
+
+    for vendor in vendors:
+        items = get_items_by_vendor(db, vendor.id)
+
+        vendor.item_names = [
+            item.name for item in items
+        ]
+
+    today = datetime.now(
+        ZoneInfo("America/Vancouver")
+    ).strftime("%a")
+
     return templates.TemplateResponse(
         "vendors.html",
         {
