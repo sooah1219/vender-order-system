@@ -90,12 +90,6 @@
           {{ vendor.name }}
         </div>
 
-        {% if vendor.phone %}
-        <div class="vendor-phone">
-          {{ vendor.phone }}
-        </div>
-        {% endif %}
-
         {% if item_names %}
         <div class="vendor-items-preview">
           {{ item_names[:4] | join(" · ") }}{% if item_names|length > 4 %} ...{% endif %}
